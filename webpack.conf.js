@@ -20,9 +20,9 @@ module.exports = options => ({
     rules: [{
       test: /\.js$/,
       include: [
-        path.resolve(__dirname, 'demo.js'),
-        path.resolve(__dirname, 'index.js'),
+        path.resolve(__dirname, 'demo'),
         path.resolve(__dirname, 'util'),
+        path.resolve(__dirname, 'index.js')
       ],
       use: [{loader: 'babel-loader'}]
     }]
@@ -30,7 +30,7 @@ module.exports = options => ({
   plugins: [
     new WebpackNotifier(),
     new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, 'demo.html')
+      template: path.resolve(__dirname, 'demo/index.html')
     }),
     new DefinePlugin({
       // NODE_ENV: JSON.stringify('production')

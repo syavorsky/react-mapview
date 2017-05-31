@@ -49,8 +49,6 @@ const multiply = (a, b) => {
   return m
 }
 
-// const toCss = m => 'matrix3d(' + m.join(', ') + ')'
-
 const rotate = (a, cx = 0, cy = 0) => {
   const m = new Float32Array(16)
   m[ 0] = cos(a); m[ 1] = -sin(a); m[ 2] = 0; m[ 3] = 0
@@ -85,7 +83,9 @@ const scale = (f, cx = 0, cy = 0) => {
   return m
 }
 
+const toCss = m => 'matrix3d(' + m.join(', ') + ')'
+
 const transform = (...transforms) => transforms.reduceRight(multiply)
 
 export default transform
-export {translate, rotate, scale}
+export {identity, translate, rotate, scale, toCss}
