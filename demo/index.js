@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {render} from 'react-dom'
-import {disable as disableTouch} from './util/touch'
-import Mapview from '.'
+import {prevent as preventTouch} from '../util/touch'
+import Mapview from '..'
 
 const css = {
   root: {
@@ -29,7 +29,7 @@ const css = {
 class App extends Component {
   render () {
     return (
-      <Mapview minScale={0.2} maxScale={5} scaleFactor={0.8}>
+      <Mapview initialScale={1} initialRotation={15}>
         {({styles, handlers, center}) => (
           <div style={css.root} {...handlers}>
             <div style={{...css.figure, ...styles}} />
@@ -41,5 +41,5 @@ class App extends Component {
   }
 }
 
-disableTouch(document.body)
+preventTouch(document.body)
 render(<App />, document.getElementById('app'))

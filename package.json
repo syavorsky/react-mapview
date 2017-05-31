@@ -9,7 +9,12 @@
   },
   "babel": {
     "presets": [
-      ["es2015", {"modules": false}],
+      [
+        "es2015",
+        {
+          "modules": false
+        }
+      ],
       "react",
       "stage-0"
     ]
@@ -18,7 +23,6 @@
     "prop-types": "^15.5.10"
   },
   "devDependencies": {
-    "babel-cli": "^6.24.1",
     "babel-core": "^6.24.1",
     "babel-eslint": "^7.2.3",
     "babel-loader": "^7.0.0",
