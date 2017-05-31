@@ -8,22 +8,22 @@ function prevent (el) {
 
 function getAngle (t0, t1) {
   return Math.atan2(
-    (t1.pageY - t0.pageY) / 2,
-    (t1.pageX - t0.pageX) / 2
+    (t1.clientY - t0.clientY) / 2,
+    (t1.clientX - t0.clientX) / 2
   )
 }
 
 function getDistance (t0, t1) {
   return Math.sqrt(
-    (t1.pageX - t0.pageX) ** 2 +
-    (t1.pageY - t0.pageY) ** 2
+    (t1.clientX - t0.clientX) ** 2 +
+    (t1.clientY - t0.clientY) ** 2
   )
 }
 
 function getCenter (t0, t1) {
   return [
-    t0.pageX + (t1.pageX - t0.pageX) / 2,
-    t0.pageY + (t1.pageY - t0.pageY) / 2
+    t0.clientX + (t1.clientX - t0.clientX) / 2,
+    t0.clientY + (t1.clientY - t0.clientY) / 2
   ]
 }
 
