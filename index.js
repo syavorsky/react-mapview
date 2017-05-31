@@ -20,12 +20,6 @@ function getTransformProp (props) {
   }
 }
 
-function getGhostElement () {
-  const ghost = new Image()
-  ghost.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
-  return ghost
-}
-
 class Mapview extends Component {
   constructor (...args) {
     super(...args)
@@ -38,10 +32,11 @@ class Mapview extends Component {
     this.onTouchMove = this.onTouchMove.bind(this)
     this.onTouchEnd = this.onTouchEnd.bind(this)
 
-    this.onDragStart = this.onDragStart.bind(this)
-    this.onDrag = this.onDrag.bind(this)
-    this.onDragEnd = this.onDragEnd.bind(this)
+    this.onMouseDown = this.onMouseDown.bind(this)
+    this.onMouseMove = this.onMouseMove.bind(this)
+    this.onMouseUp = this.onMouseUp.bind(this)
     this.onWheel = this.onWheel.bind(this)
+    this.onDoubleClick = this.onDoubleClick.bind(this)
 
     this.state = {transform: getTransformProp(this.props)}
   }
@@ -52,7 +47,6 @@ class Mapview extends Component {
 
   componentDidMount () {
     this.isTouchEnabled = isCapable()
-    if (!this.isTouchEnabled) this.ghost = getGhostElement()
   }
 
   applyTransforms (...transforms) {
@@ -62,15 +56,17 @@ class Mapview extends Component {
     this.setState({transform})
   }
 
+  // ----- mobile -----
+
   onTouchStart (e) {
     console.log('touch start')
+    this.dragging = true
     this.startTransform = this.state.transform
     this.startTouches = e.touches
     this.center = e.touches.length > 1 ? getCenter(...e.touches) : [0, 0]
   }
 
   onTouchMove (e) {
-    console.log('touch move')
     const transforms = []
 
     if (e.touches.length === 1) {
@@ -91,61 +87,68 @@ class Mapview extends Component {
 
   onTouchEnd (e) {
     console.log('touch end')
+    this.dragging = false
     this.startTransform = this.state.transform
     this.startTouches = e.touches
     this.center = [0, 0]
   }
 
-  onDragStart (e) {
-    console.log('drag start')
-    e.dataTransfer.setDragImage(this.ghost, 10, 10)
-    this.startTransform = this.state.transform
+  // ----- desktop -----
 
-    const {clientX, clientY} = e
-    this.startPos = {clientX, clientY}
+  onMouseDown (e) {
+    console.log('drag start')
+    this.dragging = true
+    this.startTransform = this.state.transform
+    this.startPos = {
+      clientX: e.clientX,
+      clientY: e.clientY
+    }
   }
 
-  onDrag (e) {
-    console.log('dragging',
-      e.clientX, this.startPos.clientX)
-
+  onMouseMove (e) {
+    if (!this.dragging) return
     this.applyTransforms(this.startTransform, translate(
       e.clientX - this.startPos.clientX,
       e.clientY - this.startPos.clientY
     ))
   }
 
-  onDragEnd (e) {
+  onMouseUp (e) {
     console.log('drag end')
+    this.dragging = false
     this.startTransform = this.state.transform
   }
 
-  onWheel (e) {
-    const factor = 1 + Math.abs(e.deltaY / 100)
-    this.applyTransforms(scale(factor, e.clientX, e.clientY))
+  onDoubleClick (e) {
+    this.applyTransforms(this.state.transform,
+      scale(1.5, e.clientX, e.clientY))
   }
+
+  onWheel (e) {
+    this.applyTransforms(this.state.transform,
+      scale(1 - e.deltaY / 100, e.clientX, e.clientY))
+  }
+
+  // ----- render -----
 
   render () {
     const {children, onTransform} = this.props
-    console.log('this.isTouchEnabled', this.isTouchEnabled)
 
     return children({
       styles: {
         transformOrigin: '0 0 0',
-        transform: toCss(this.state.transform)
+        transform: toCss(this.state.transform),
+        // transition: 'transform 0.2s'
       },
       handlers: this.isTouchEnabled ? {
         onTouchStart: this.onTouchStart,
         onTouchMove: this.onTouchMove,
         onTouchEnd: this.onTouchEnd
       } : {
-        // onMouseDown: this.onTouchStart,
-        // onMouseMove: this.onTouchMove,
-        // onMouseUp: this.onTouchEnd,
-        draggable: true,
-        onDragStart: this.onDragStart,
-        onDrag: this.onDrag,
-        onDragEnd: this.onDragEnd,
+        onMouseDown: this.onMouseDown,
+        onMouseMove: this.onMouseMove,
+        onMouseUp: this.onMouseUp,
+        onDoubleClick: this.onDoubleClick,
         onWheel: this.onWheel
       },
       center: this.center
