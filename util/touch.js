@@ -1,10 +1,3 @@
-function prevent (el) {
-  const stop = e => e.preventDefault()
-  const options = {passive: false};
-
-  ['touchstart', 'touchmove', 'touchend']
-    .forEach(event => el.addEventListener(event, stop, options))
-}
 
 function getAngle (t0, t1) {
   return Math.atan2(
@@ -30,9 +23,11 @@ function getCenter (t0, t1) {
 function isCapable () {
   return (
     typeof document !== 'undefined' &&
-    document.documentElement &&
-    ('ontouchstart' in document.documentElement)
+    document.documentElement && (
+      ('ontouchstart' in document.documentElement) ||
+      document.location.search.indexOf('touch') !== -1
+    )
   )
 }
 
-export {prevent, getAngle, getDistance, getCenter, isCapable}
+export {getAngle, getDistance, getCenter, isCapable}
